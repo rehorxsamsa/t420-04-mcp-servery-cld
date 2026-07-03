@@ -1,6 +1,7 @@
 <?php
 /** @var list<\App\Model\Task> $tasks */
 /** @var int $progress */
+/** @var bool $justAdded */
 ?>
 <!doctype html>
 <html lang="cs">
@@ -61,5 +62,26 @@
         Spustitelná codebase k tutoriálu Claude Code · čisté PHP-OOP + Bootstrap 5 · Docker
     </p>
 </div>
+
+<!-- Toast: potvrzení po přidání úkolu (Bootstrap 5.3, barevná varianta bez hlavičky) -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="taskAddedToast" class="toast align-items-center text-bg-success border-0"
+         role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">✅ Úkol byl přidán.</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast" aria-label="Zavřít"></button>
+        </div>
+    </div>
+</div>
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<?php if ($justAdded): ?>
+<script>
+    // Po úspěšném přidání (redirect na /?added=1) rovnou zobraz toast.
+    bootstrap.Toast.getOrCreateInstance(document.getElementById('taskAddedToast')).show();
+</script>
+<?php endif; ?>
 </body>
 </html>

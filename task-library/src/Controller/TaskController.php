@@ -20,7 +20,8 @@ final class TaskController
     {
         $tasks = $this->service->list();
         $progress = $this->service->progress();
-        $this->render('tasks', ['tasks' => $tasks, 'progress' => $progress]);
+        $justAdded = isset($_GET['added']);
+        $this->render('tasks', ['tasks' => $tasks, 'progress' => $progress, 'justAdded' => $justAdded]);
     }
 
     public function store(): void
@@ -28,10 +29,12 @@ final class TaskController
         $title = (string) ($_POST['title'] ?? '');
         try {
             $this->service->add($title);
+            // ?added=1 je signál pro šablonu, ať po redirectu zobrazí potvrzovací toast.
+            $this->redirect('/?added=1');
         } catch (\InvalidArgumentException) {
-            // V reálu bychom přidali flash message; tady prostě redirect zpět.
+            // Neplatný název — bez potvrzení zpět na seznam.
+            $this->redirect('/');
         }
-        $this->redirect('/');
     }
 
     public function toggle(int $id): void
