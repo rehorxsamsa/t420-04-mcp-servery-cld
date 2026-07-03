@@ -156,7 +156,7 @@ Co Claude udělá přes Playwright:
 >
 > Audit log potvrdil **append-only** chování: po smazání úkolu jeho starší záznamy (Vytvořen, Dokončen) v logu **zůstaly** — mazání úkolu nemaže jeho historii (viz [zajímavost 5](#7-zajímavostí-o-cvičné-aplikaci)).
 >
-> Dvě praktické poznámky z běhu: tlačítko **Smazat maže rovnou**, bez potvrzovacího dialogu (odpovídá jednoduchosti tutoriálu). A v konzoli naskočí jediná chyba — **`404 favicon.ico`** — která je kosmetická a funkčnost neovlivňuje.
+> Praktická poznámka z běhu: tlačítko **Smazat maže rovnou**, bez potvrzovacího dialogu (odpovídá jednoduchosti tutoriálu). Konzole je jinak čistá — favicon je vyřešený inline emoji SVG (`<link rel="icon" href="data:image/svg+xml,…">`) v šablonách, takže nepadá ani `404 favicon.ico`.
 
 > 💡 **Poznámka 2026:** Microsoft nově doporučuje pro agenty `@playwright/cli` místo MCP — spotřebuje ~4× méně tokenů (snímky ukládá na disk jako YAML místo streamování celého accessibility tree do kontextu). Pro učení je MCP názornější; pokud řešíš náklady na velkém projektu, mrkni na Playwright CLI.
 
