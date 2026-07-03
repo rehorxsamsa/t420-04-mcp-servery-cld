@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Tohle je **Díl 04 tutoriálu Claude Code — MCP servery**. Repo má dvě části:
 
 1. **Výukový text** (`README.md`) — teorie MCP (Model Context Protocol), `claude mcp add`, stdio vs. `--transport http`, scope, `/mcp`. Obsahuje i test s odpověďmi. Když upravuješ README, drž český styl a formát `<details>` odpovědí.
-2. **Cvičná aplikace** `task-library/` — malá PHP-OOP „Knihovna úkolů", na které se MCP prakticky zkouší (Playwright pro E2E ověření UI, Context7 pro aktuální Bootstrap docs).
+2. **Cvičná aplikace** `task-library/` — malý PHP-OOP „Seznam úkolů", na kterém se MCP prakticky zkouší (Playwright pro E2E ověření UI, Context7 pro aktuální Bootstrap docs).
 
 ## MCP servery (jádro tohoto dílu)
 

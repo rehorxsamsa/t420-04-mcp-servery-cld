@@ -4,14 +4,14 @@
 > dva nejužitečnější servery pro web vývoj — **Playwright** (ovládání prohlížeče)
 > a **Context7** (aktuální dokumentace knihoven) — a příkaz `/mcp`.
 >
-> **Na čem:** na naší „Knihovně úkolů" — Playwright použijeme k E2E ověření UI,
+> **Na čem:** na našem „Seznamu úkolů" — Playwright použijeme k E2E ověření UI,
 > Context7 k získání aktuální Bootstrap dokumentace.
 
 ---
 
 ## 0. Rozběhnutí cvičné aplikace (Docker)
 
-Celý díl pracuje s **cvičnou aplikací „Knihovna úkolů"** — malý PHP 8.3 OOP TODO list (bez frameworku, bez Composeru), který je součástí tohoto repa ve složce `task-library/`. Než začneš s MCP, rozběhni ji v Dockeru.
+Celý díl pracuje s **cvičnou aplikací „Seznam úkolů"** — malý PHP 8.3 OOP TODO list (bez frameworku, bez Composeru), který je součástí tohoto repa ve složce `task-library/`. Než začneš s MCP, rozběhni ji v Dockeru.
 
 **Předpoklad:** nainstalovaný Docker + Docker Compose. PHP na hostiteli mít **nemusíš** — běží celé v kontejneru.
 
@@ -244,7 +244,7 @@ Do souboru **`.mcp.json`** v kořeni repa (projektový scope). Po klonu se Claud
 `/mcp` (vypíše připojené servery a stav ✓/✗) a `/doctor` (health check instalace Claude Code). Z CLI lze i `claude mcp list`.
 </details>
 
-**5. K čemu konkrétně použiješ Playwright MCP na naší Knihovně úkolů?**
+**5. K čemu konkrétně použiješ Playwright MCP na našem Seznamu úkolů?**
 
 <details><summary>Odpověď</summary>
 
