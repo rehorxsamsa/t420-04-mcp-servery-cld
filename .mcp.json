@@ -2,7 +2,13 @@
   "mcpServers": {
     "playwright": {
       "command": "npx",
-      "args": ["@playwright/mcp@latest"]
+      "args": [
+        "@playwright/mcp@latest",
+        "--executable-path",
+        "/home/q/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+        "--headless",
+        "--isolated"
+      ]
     },
     "context7": {
       "type": "http",
