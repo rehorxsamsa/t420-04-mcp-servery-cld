@@ -9,6 +9,46 @@
 
 ---
 
+## 0. Rozběhnutí cvičné aplikace (Docker)
+
+Celý díl pracuje s **cvičnou aplikací „Knihovna úkolů"** — malý PHP 8.3 OOP TODO list (bez frameworku, bez Composeru), který je součástí tohoto repa ve složce `task-library/`. Než začneš s MCP, rozběhni ji v Dockeru.
+
+**Předpoklad:** nainstalovaný Docker + Docker Compose. PHP na hostiteli mít **nemusíš** — běží celé v kontejneru.
+
+```bash
+cd task-library
+docker compose up -d --build     # poprvé (postaví image); běží na pozadí (-d)
+```
+
+Aplikace pak jede na **http://localhost:8080**. Otevři si ji v prohlížeči — uvidíš seznam úkolů (DB se při prvním startu sama vytvoří a naseeduje 3 úkoly) a stránku audit logu na `/audit`.
+
+Běžné příkazy:
+
+```bash
+docker compose up -d             # příště (image už existuje)
+docker compose ps                # stav kontejnerů
+docker compose logs -f web       # živé logy nginx (nebo: app)
+docker compose down              # zastavit a smazat kontejnery
+```
+
+**Jak to je poskládané** (detaily v `../ARCHITECTURE.md`):
+
+| Služba | Kontejner | Co dělá |
+|---|---|---|
+| `web` | `task-library-web-t420-04` | nginx, publikuje port `8080:80`, PHP předává FastCGI na `app:9000` |
+| `app` | `task-library-app-t420-04` | `php:8.3-fpm-alpine` + `pdo_sqlite`, běží PHP-FPM (ven se nepublikuje) |
+
+Zdrojáky jsou do kontejnerů bind-mountnuté (`./:/var/www/html`), takže **změna v kódu se projeví hned bez rebuildu** — stačí refresh prohlížeče. `docker compose up --build` potřebuješ jen po změně `Dockerfile`.
+
+> **PHP jen v Dockeru:** případné `php` příkazy (např. lint) pouštěj přes kontejner, ne lokálně:
+> ```bash
+> docker exec task-library-app-t420-04 php -l src/Service/TaskService.php
+> ```
+
+Aplikaci teď necháme běžet — v sekci 4 na ni pustíme Playwright.
+
+---
+
 ## 1. Co je MCP a proč ti změní workflow
 
 **MCP (Model Context Protocol)** je otevřený standard od Anthropicu, který dává Claude přístup k externím nástrojům a službám — prohlížeč, GitHub, databáze, dokumentace, Slack. Je to jako „USB-C pro AI": jeden protokol, do kterého se připojují různé nástroje.
@@ -81,14 +121,9 @@ claude mcp list
 
 ## 4. Playwright MCP — E2E ověření naší aplikace
 
-Tohle je „aha moment". Playwright dá Claude reálný prohlížeč. Spusť naši aplikaci (kopii „Knihovny úkolů" z dílu 01 najdeš přímo v tomto repu ve složce `task-library/`):
+Tohle je „aha moment". Playwright dá Claude reálný prohlížeč. Aplikace už běží ze [sekce 0](#0-rozběhnutí-cvičné-aplikace-docker) na **http://localhost:8080** (kdyby ne, spusť `cd task-library && docker compose up -d`).
 
-```bash
-cd task-library
-docker compose up -d --build   # běží na http://localhost:8080
-```
-
-V jiném terminálu v session Claude Code (s připojeným Playwrightem):
+V session Claude Code (s připojeným Playwrightem):
 
 ```
 > Otevři http://localhost:8080, přidej úkol "Vyzkoušet Playwright MCP",
@@ -138,6 +173,20 @@ Síla MCP je v kombinaci. Příklad reálného workflow nad naší aplikací:
 4. (s GitHub MCP) → vytvoří PR
 
 Každý přidaný server násobí, co Claude Code zvládne. Pravidlo: **začni s jedním dvěma, co řeší tvoji největší bolest** (pro web vývoj Playwright + Context7), a rozšiřuj postupně.
+
+---
+
+## 7 zajímavostí o cvičné aplikaci
+
+1. **Nula závislostí.** Žádný Composer, žádný framework — ani jeden externí balíček. I PSR-4 autoloading je napsaný ručně (`autoload.php`, ~26 řádků `spl_autoload_register`).
+2. **Databáze se postaví sama.** `Database::connection()` je singleton, který při úplně prvním requestu vytvoří schéma a naseeduje 3 úkoly (`migrate()`). Žádný krok „spusť migrace" — jen otevřeš stránku.
+3. **Mikro-router.** Celý routing (`Router.php`, ~46 řádků) umí jen literální cesty a jediný parametr `{id}` (`{id}` → regex `(?P<id>\d+)`). Žádné wildcardy, žádné anotace — routy jsou obyčejná tabulka v `public/index.php`.
+4. **DI „chudého muže".** Závislosti neskládá žádný kontejner — jsou to defaulty v konstruktoru (`new TaskService()`). Řetěz se v produkci složí sám, a přesto jde do každé vrstvy pro testy podstrčit fake.
+5. **Audit log jen přidává, nikdy nemaže.** Tabulka `audit_log` je append-only a `task_id` schválně **nemá** foreign key — auditní záznam tak přežije i smazání úkolu, ke kterému patřil.
+6. **Šablony bez enginu.** Žádný Twig/Blade — `render()` udělá `extract($data)` a `require` prostý PHP soubor. Bootstrap 5 jede z CDN, takže frontend nemá **žádný** build krok.
+7. **PHP na počítači vůbec nemáš.** Celá app běží v Dockeru (nginx + `php:8.3-fpm-alpine`); bind mount promítá změny kódu do kontejneru bez rebuildu. I lint (`php -l`) se pouští přes `docker exec`, ne lokálně.
+
+> Pointa: celá tahle „opravdová" webová aplikace se vejde do ~600 řádků PHP — dost malá, aby se dala přečíst za odpoledne, a dost bohatá, aby na ní dávaly smysl MCP nástroje z tohoto dílu.
 
 ---
 
