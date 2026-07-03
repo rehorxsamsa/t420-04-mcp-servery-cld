@@ -102,6 +102,12 @@ Pro **projektový** scope (sdílíš s týmem přes git) se používá soubor **
 
 Když člen týmu naklonuje repo a spustí `claude`, Claude Code se zeptá, jestli `.mcp.json` servery povolit. Tým tak sdílí stejnou MCP výbavu.
 
+> ⚙️ **Reálný `.mcp.json` v tomto repu** má u Playwrightu navíc pár argumentů:
+> ```json
+> "args": ["@playwright/mcp@latest", "--executable-path", "…/chrome", "--headless", "--isolated"]
+> ```
+> `--headless` a `--executable-path` (cesta k lokálnímu Chromiu) potřebuješ v prostředí **bez GUI** — typicky WSL nebo CI; `--isolated` drží čistý profil mezi běhy. Na desktopu s běžným prohlížečem si vystačíš s holým `["@playwright/mcp@latest"]` z tabulky výše.
+
 ---
 
 ## 3. `/mcp` — co je připojené
@@ -139,6 +145,18 @@ Co Claude udělá přes Playwright:
 5. Udělá screenshot
 
 **Proč je to silné:** Claude právě otestoval reálné chování tvé aplikace end-to-end, aniž bys psal jediný řádek Playwright kódu. Po každé změně UI můžeš nechat Claude udělat „self-QA".
+
+> ✅ **Ověřeno na tomto repu.** Celý CRUD cyklus proběhl přes Playwright MCP a čísla seděla — progress bar se přepočítal na každou akci:
+>
+> | Akce (přes accessibility tree) | Hotovo | Zápis do `/audit` |
+> |---|---|---|
+> | přidání úkolu | 50 % → 43 % | ➕ Vytvořen |
+> | odškrtnutí jako hotové | 43 % → 57 % | ✅ Dokončen |
+> | smazání úkolu | 57 % → 50 % | 🗑️ Smazán |
+>
+> Audit log potvrdil **append-only** chování: po smazání úkolu jeho starší záznamy (Vytvořen, Dokončen) v logu **zůstaly** — mazání úkolu nemaže jeho historii (viz [zajímavost 5](#7-zajímavostí-o-cvičné-aplikaci)).
+>
+> Dvě praktické poznámky z běhu: tlačítko **Smazat maže rovnou**, bez potvrzovacího dialogu (odpovídá jednoduchosti tutoriálu). A v konzoli naskočí jediná chyba — **`404 favicon.ico`** — která je kosmetická a funkčnost neovlivňuje.
 
 > 💡 **Poznámka 2026:** Microsoft nově doporučuje pro agenty `@playwright/cli` místo MCP — spotřebuje ~4× méně tokenů (snímky ukládá na disk jako YAML místo streamování celého accessibility tree do kontextu). Pro učení je MCP názornější; pokud řešíš náklady na velkém projektu, mrkni na Playwright CLI.
 
