@@ -175,6 +175,14 @@ Na naší aplikaci (používá Bootstrap 5):
 
 Co se stane: místo hádání z paměti Claude přes Context7 stáhne **aktuální** Bootstrap 5.3 docs a vygeneruje markup, který odpovídá přesně té verzi — včetně případných breaking changes oproti starším verzím.
 
+> ✅ **Hotovo v tomto repu.** Přesně tenhle prompt jsme spustili a toast je v appce živý — po přidání úkolu vyskočí vpravo dole zelené „✅ Úkol byl přidán.". Co Context7 přinesl a jak to zapadlo do naší architektury:
+>
+> - **markup** = barevná varianta `text-bg-success` (bez hlavičky), jak ji ukazuje [Bootstrap 5.3 docs](https://getbootstrap.com/docs/5.3/components/toasts/) — ne verze s `toast-header`/obrázkem z paměti;
+> - **spuštění** přes `bootstrap.Toast.getOrCreateInstance(el).show()` — a k tomu bylo potřeba doplnit **Bootstrap JS bundle** (šablona do té doby tahala jen CSS);
+> - **„po přidání"** řeší náš [PRG pattern](../ARCHITECTURE.md): `store()` po úspěchu přesměruje na `/?added=1`, `index()` předá šabloně `$justAdded` a toast se spustí jen tehdy.
+>
+> Ověřeno Playwrightem: toast se objeví v accessibility tree jako `alert`, konzole 0 errorů. Hezká ukázka, jak **Context7 dodá aktuální kód** a **Playwright ho vzápětí ověří** (viz [sekce 6](#6-kombinace-serverů--workflow)).
+
 Klíč k použití: do promptu přidáš **`use context7`** (nebo zmíníš konkrétní knihovnu). Hodí se hlavně u rychle se měnících frameworků (Next.js, Tailwind, Laravel, Symfony…), kde se API mění mezi minor verzemi.
 
 > Pro tebe konkrétně: u Symfony/Laravel tutoriálů je Context7 zlato — vždycky dostaneš syntaxi pro tu verzi, kterou reálně používáš, ne pro tři roky starou.
